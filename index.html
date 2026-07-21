@@ -170,6 +170,77 @@
     .hidden{ display:none !important; }
 
     @media (min-width:480px){ .app{ max-width:520px; } }
+
+    /* Desktop: fill the full page height edge-to-edge, no page scroll. Sizing scales with viewport
+       height (clamp with vh) so it stretches on tall screens and stays compact on short ones.
+       Mobile (below 900px) is untouched and keeps scrolling. */
+    @media (min-width:900px){
+        body{
+            overflow:hidden;
+            align-items:stretch;
+            padding:16px;
+        }
+        .app{
+            width:calc(100% - 32px);
+            max-width:1400px;
+            margin:0 auto;
+            height:calc(100vh - 32px);
+            display:grid;
+            grid-template-columns: minmax(300px,420px) 1fr;
+            grid-template-rows: auto 1fr;
+            grid-template-areas:
+                "header header"
+                "intro  steps";
+            gap:clamp(10px, 1.6vh, 22px);
+        }
+        header.app-header{ grid-area:header; margin-bottom:0; padding:clamp(10px,1.8vh,20px) 18px; }
+        #introCard{ grid-area:intro; margin-bottom:0; max-height:100%; overflow-y:auto; display:flex; flex-direction:column; justify-content:safe center; }
+        .steps-col{
+            grid-area:steps;
+            display:flex;
+            flex-direction:column;
+            justify-content:safe center;
+            gap:clamp(8px, 1.6vh, 22px);
+            min-height:0;
+            max-height:100%;
+            overflow-y:auto;
+        }
+        .steps-col .card{ margin-bottom:0; }
+        .card{ padding:clamp(10px, 2vh, 26px); }
+        .intro-title{ margin-bottom:clamp(6px,1vh,12px); font-size:clamp(13.5px,1.6vh,17px); }
+        .intro-text{ font-size:clamp(12.5px,1.5vh,15px); line-height:1.6; }
+        .warn-box{ padding:clamp(8px,1.4vh,16px) clamp(12px,1.8vh,18px); margin-top:clamp(8px,1.2vh,16px); }
+        .warn-box strong{ font-size:clamp(12px,1.5vh,15px); margin-bottom:clamp(2px,0.4vh,5px); }
+        .warn-box p{ font-size:clamp(11px,1.35vh,13.5px); }
+
+        .step-label{ margin-bottom:clamp(6px,1.2vh,16px); font-size:clamp(13.5px,1.7vh,17px); gap:8px; }
+        .step-label .n{ width:clamp(20px,2.6vh,28px); height:clamp(20px,2.6vh,28px); font-size:clamp(11.5px,1.4vh,14px); }
+
+        .med-grid{ gap:clamp(6px,1.2vh,14px); }
+        .med-btn{ padding:clamp(8px,1.6vh,17px); font-size:clamp(13.5px,1.6vh,16px); }
+        .med-btn .tag{ margin-top:clamp(2px,0.5vh,6px); font-size:clamp(11px,1.2vh,12.5px); }
+
+        .pen-grid{ gap:clamp(6px,1.2vh,12px); }
+        .pen-btn{ padding:clamp(6px,1.4vh,12px); font-size:clamp(13px,1.5vh,15px); }
+
+        .toggle{ padding:clamp(4px,0.7vh,7px); }
+        .toggle button{ padding:clamp(6px,1.3vh,12px); font-size:clamp(13.5px,1.5vh,15px); }
+        .toggle-slider{ top:clamp(4px,0.7vh,7px); width:calc(50% - 6px); height:calc(100% - 8px); }
+
+        .field{ margin-top:clamp(8px,1.6vh,20px); }
+        .field label{ margin-bottom:clamp(4px,0.8vh,10px); font-size:clamp(12px,1.4vh,14px); }
+        input[type=number]{ padding:clamp(7px,1.6vh,15px) 78px clamp(7px,1.6vh,15px) 12px; font-size:clamp(14px,1.6vh,16px); }
+        .error-msg{ margin-top:clamp(3px,0.6vh,7px); min-height:13px; font-size:clamp(11.5px,1.3vh,13px); }
+
+        .calc-btn{ padding:clamp(8px,1.8vh,16px); margin-top:clamp(8px,1.6vh,20px); font-size:clamp(13.5px,1.6vh,16px); }
+
+        .result{ margin-top:clamp(8px,1.6vh,20px); border-radius:16px; padding:clamp(10px,2.2vh,30px) clamp(14px,2vh,22px) clamp(9px,1.8vh,24px); }
+        .result-badge{ width:clamp(24px,4vh,46px); height:clamp(24px,4vh,46px); font-size:clamp(12px,2.2vh,23px); margin-bottom:clamp(4px,1vh,11px); }
+        .result-label{ font-size:clamp(10.5px,1.2vh,13px); margin-bottom:clamp(3px,0.7vh,7px); }
+        .result .value{ font-size:clamp(23px,5vh,48px); }
+        .result .value small{ font-size:clamp(12px,1.9vh,19px); }
+        .result .from{ margin-top:clamp(6px,1.4vh,15px); padding:clamp(3px,0.7vh,7px) 16px; font-size:clamp(10.5px,1.3vh,13px); }
+    }
 </style>
 </head>
 <body>
@@ -184,7 +255,7 @@
     </div>
   </header>
 
-  <div class="card">
+  <div class="card" id="introCard">
     <div class="intro-title">💡 מה זה טיפול GLP-1?</div>
     <div class="intro-text">
       תרופות ממשפחת GLP-1 (כגון Semaglutide בוויגובי ו-Tirzepatide במונג׳רו) ניתנות בזריקה שבועית ומסייעות בירידה במשקל ובאיזון רמות הסוכר בדם, על ידי האטת התרוקנות הקיבה והפחתת תחושת הרעב. המינון עולה בהדרגה על פי הנחיית הרופא/ה המטפל/ת, בהתאם לתגובת הגוף ולתופעות הלוואי.
@@ -196,44 +267,46 @@
     </div>
   </div>
 
-  <div class="card">
-    <div class="step-label"><span class="n">1</span> בחר/י תרופה</div>
-    <div class="med-grid" id="medGrid">
-      <button class="med-btn" data-med="wegovy">וויגובי<span class="tag">Semaglutide</span></button>
-      <button class="med-btn" data-med="mounjaro">מונג׳רו<span class="tag">Tirzepatide</span></button>
-    </div>
-  </div>
-
-  <div class="card hidden" id="penCard">
-    <div class="step-label"><span class="n">2</span> בחר/י מינון העט</div>
-    <div class="pen-grid" id="penGrid"></div>
-  </div>
-
-  <div class="card hidden" id="calcCard">
-    <div class="step-label"><span class="n">3</span> חשב/י</div>
-
-    <div class="toggle" id="modeToggle">
-      <div class="toggle-slider"></div>
-      <button data-mode="doseToClicks" class="active">מינון ← קליקים</button>
-      <button data-mode="clicksToDose">קליקים ← מינון</button>
-    </div>
-
-    <div class="field">
-      <label id="fieldLabel">הזן מינון רצוי (מ״ג)</label>
-      <div class="input-wrap">
-        <input type="number" id="inputVal" inputmode="decimal" step="any" placeholder="לדוגמה: 0.5">
-        <span class="unit" id="unitLabel">מ״ג</span>
+  <div class="steps-col">
+    <div class="card" id="medCard">
+      <div class="step-label"><span class="n">1</span> בחר/י תרופה</div>
+      <div class="med-grid" id="medGrid">
+        <button class="med-btn" data-med="wegovy">וויגובי<span class="tag">Semaglutide</span></button>
+        <button class="med-btn" data-med="mounjaro">מונג׳רו<span class="tag">Tirzepatide</span></button>
       </div>
-      <div class="error-msg" id="errorMsg"></div>
     </div>
 
-    <button class="calc-btn" id="calcBtn" disabled>חשב</button>
+    <div class="card hidden" id="penCard">
+      <div class="step-label"><span class="n">2</span> בחר/י מינון העט</div>
+      <div class="pen-grid" id="penGrid"></div>
+    </div>
 
-    <div class="result hidden" id="resultBox">
-      <div class="result-badge">✅</div>
-      <div class="result-label">התוצאה שלך</div>
-      <div class="value" id="resultValue">—</div>
-      <div class="from" id="resultFrom"></div>
+    <div class="card hidden" id="calcCard">
+      <div class="step-label"><span class="n">3</span> חשב/י</div>
+
+      <div class="toggle" id="modeToggle">
+        <div class="toggle-slider"></div>
+        <button data-mode="doseToClicks" class="active">מינון ← קליקים</button>
+        <button data-mode="clicksToDose">קליקים ← מינון</button>
+      </div>
+
+      <div class="field">
+        <label id="fieldLabel">הזן מינון רצוי (מ״ג)</label>
+        <div class="input-wrap">
+          <input type="number" id="inputVal" inputmode="decimal" step="any" placeholder="לדוגמה: 0.5">
+          <span class="unit" id="unitLabel">מ״ג</span>
+        </div>
+        <div class="error-msg" id="errorMsg"></div>
+      </div>
+
+      <button class="calc-btn" id="calcBtn" disabled>חשב</button>
+
+      <div class="result hidden" id="resultBox">
+        <div class="result-badge">✅</div>
+        <div class="result-label">התוצאה שלך</div>
+        <div class="value" id="resultValue">—</div>
+        <div class="from" id="resultFrom"></div>
+      </div>
     </div>
   </div>
 </div>
