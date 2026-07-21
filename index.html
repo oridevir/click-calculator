@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>זריקות הרזיה GLP1 - מחשבון מינון וקליקים</title>
+<style>
+    :root {
+        --pri:       #1565C0;
+        --pri-dark:  #0D47A1;
+        --pri-mid:   #1976D2;
+        --pri-light: #42A5F5;
+        --bg:        #EDF4FF;
+        --card:      #FFFFFF;
+        --border:    #BBDEFB;
+        --text:      #1a1a2e;
+        --text2:     #546E7A;
+        --ok:        #2E7D32;
+        --ok-bg:     #E8F5E9;
+        --warn:      #E65100;
+        --warn-bg:   #FFF3E0;
+        --err:       #C62828;
+        --err-bg:    #FFEBEE;
+        --shadow:    0 2px 16px rgba(21,101,192,.13);
+        --r:         16px;
+        --r-sm:      10px;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html,body{height:100%;}
+    body {
+        font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        direction: rtl;
+        overflow-x: hidden;
+        padding: 18px 12px 84px;
+        display:flex; justify-content:center;
+    }
+
+    .app{ width:100%; max-width:600px; }
+
+    /* Header styled like BP app */
+    header.app-header {
+        background: linear-gradient(135deg, var(--pri-dark) 0%, var(--pri) 55%, var(--pri-mid) 100%);
+        color: #fff;
+        padding: 14px 18px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        box-shadow: 0 4px 20px rgba(21,101,192,.35);
+        border-radius: var(--r);
+        margin-bottom:16px;
+    }
+    .hdr-logo { width:52px; height:52px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,.5); background:#fff; flex-shrink:0; }
+    .hdr-text { text-align:center; }
+    .hdr-eyebrow { font-size:11px; font-weight:700; letter-spacing:.03em; color:rgba(255,255,255,.85); margin-bottom:2px; }
+    .hdr-text h1.page-title { font-size:18px; font-weight:700; line-height:1.2; color:#fff; margin:0; }
+    .hdr-credit { font-size:14px; font-weight:700; color:#fff; margin-top:4px; }
+
+    /* Cards */
+    .card {
+        background:var(--card);
+        border-radius:var(--r);
+        padding:18px;
+        margin-bottom:14px;
+        box-shadow:var(--shadow);
+        border:1px solid var(--border);
+    }
+
+    /* Intro / about GLP-1 */
+    .intro-title { font-size:14px; font-weight:700; color:var(--pri-dark); margin-bottom:8px; text-align:center; }
+    .intro-text { font-size:13.5px; line-height:1.7; color:#444; text-align:center; }
+
+    /* Warning callout — compact but emphasized */
+    .warn-box {
+        background: linear-gradient(135deg, #B71C1C, #C62828);
+        border-radius: 8px;
+        padding: 10px 14px;
+        margin-top: 12px;
+        text-align: center;
+        box-shadow: 0 4px 14px rgba(183,28,28,.32);
+    }
+    .warn-box strong { display:block; font-size:13px; font-weight:800; color:#fff; margin-bottom:3px; }
+    .warn-box p { font-size:12px; font-weight:600; line-height:1.55; color:#fff; opacity:.95; margin:0; }
+
+    .step-label { font-size:15px; font-weight:700; color:var(--pri); margin-bottom:12px; display:flex; align-items:center; gap:10px; }
+    .step-label .n { width:26px; height:26px; border-radius:50%; background:var(--pri); color:#fff; font-size:13px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+
+    /* Buttons & controls tuned to BP palette */
+    .med-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .med-btn{ border-radius:12px; padding:14px; text-align:center; cursor:pointer; font-weight:700; font-size:15px; background:#FAFCFF; border:2px solid var(--border); color:var(--pri-dark); transition:all .15s; }
+    .med-btn .tag{ display:block; font-size:12px; color:var(--text2); margin-top:6px; font-weight:600; transition:color .15s; }
+    .med-btn.selected{ background:linear-gradient(135deg,var(--pri-dark),var(--pri-mid)); color:#fff; box-shadow:0 6px 20px rgba(21,101,192,.18); border-color:transparent; }
+    .med-btn.selected .tag{ color:#fff; opacity:.85; }
+
+    .pen-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+    .pen-btn{ padding:10px; border-radius:10px; border:2px solid var(--border); background:#fff; font-weight:700; color:var(--pri-dark); }
+    .pen-btn.selected{ background:var(--pri-light); color:#fff; border-color:transparent; box-shadow:0 6px 18px rgba(21,101,192,.12); }
+
+    .toggle{ position:relative; display:flex; gap:6px; background:linear-gradient(90deg,#F4F8FF,#EFF7FF); padding:6px; border-radius:12px; }
+    .toggle-slider{
+        position:absolute; top:6px; right:6px;
+        width:calc(50% - 9px); height:calc(100% - 12px);
+        background:linear-gradient(135deg, var(--pri-dark), var(--pri-mid));
+        border-radius:8px;
+        box-shadow:0 4px 14px rgba(21,101,192,.4);
+        transition:transform .28s cubic-bezier(.4,0,.2,1);
+    }
+    .toggle.mode-clicks .toggle-slider{ transform:translateX(calc(-100% - 6px)); }
+    .toggle button{ position:relative; z-index:1; flex:1; border:none; background:transparent; padding:10px; border-radius:8px; font-weight:700; color:var(--pri-dark); transition:color .2s; font-family:inherit; }
+    .toggle button.active{ color:#fff; }
+
+    .field{ margin-top:16px; }
+    .field label{ display:block; font-size:13px; font-weight:600; color:var(--text); margin-bottom:8px; }
+    .field .range-hint{ font-weight:400; color:var(--text2); font-size:12.5px; }
+
+    .input-wrap{ position:relative; }
+    input[type=number]{
+        width:100%;
+        padding:12px 82px 12px 14px;
+        border-radius:10px;
+        border:2px solid var(--border);
+        font-size:16px;
+        font-weight:700;
+        color:var(--pri-dark);
+        background:#FAFCFF;
+        text-align:right;
+        direction:rtl;
+        font-family:inherit;
+        outline:none;
+        transition:border-color .2s, box-shadow .2s;
+    }
+    input[type=number]:focus{ border-color:var(--pri); box-shadow:0 0 0 3px rgba(21,101,192,.1); background:#fff; }
+    input::placeholder{ color:#a9b4c2; font-weight:500; }
+    .unit{ position:absolute; right:16px; top:50%; transform:translateY(-50%); color:var(--text2); font-weight:700; font-size:13px; pointer-events:none; white-space:nowrap; }
+    .error-msg{ font-size:12.5px; color:var(--err); margin-top:6px; min-height:16px; }
+
+    .calc-btn{ width:100%; padding:12px; border-radius:12px; border:none; background:linear-gradient(135deg,var(--pri-dark),var(--pri-mid)); color:#fff; font-weight:800; font-size:15px; cursor:pointer; box-shadow:0 6px 18px rgba(21,101,192,.18); margin-top:16px; font-family:inherit; }
+    .calc-btn:disabled{ opacity:.45; cursor:not-allowed; box-shadow:none; }
+
+    .result{
+        margin-top:16px; border-radius:20px; padding:26px 20px 22px;
+        background:linear-gradient(160deg, #F1F8F2 0%, #DCEFDD 55%, #C8E6C9 100%);
+        border:1px solid #A5D6A7;
+        text-align:center;
+        box-shadow:0 10px 30px -8px rgba(46,125,50,.3), inset 0 1px 0 rgba(255,255,255,.6);
+    }
+    .result:not(.hidden){ animation:result-pop .35s cubic-bezier(.34,1.56,.64,1); }
+    @keyframes result-pop{ from{ opacity:0; transform:scale(.92) translateY(6px); } to{ opacity:1; transform:scale(1) translateY(0); } }
+    .result-badge{
+        width:42px; height:42px; border-radius:50%; margin:0 auto 10px;
+        background:linear-gradient(135deg,#43A047,#2E7D32);
+        color:#fff; font-size:21px;
+        display:flex; align-items:center; justify-content:center;
+        box-shadow:0 6px 16px rgba(46,125,50,.35);
+    }
+    .result-label{ font-size:12px; font-weight:700; letter-spacing:.02em; color:#2E7D32; opacity:.8; margin-bottom:6px; }
+    .result .value{ font-size:46px; font-weight:900; color:#1B5E20; letter-spacing:-1px; line-height:1.1; }
+    .result .value small{ font-size:18px; font-weight:800; color:#388E3C; margin-right:4px; }
+    .result .from{
+        display:inline-block; margin-top:14px; padding:6px 16px;
+        background:rgba(255,255,255,.65);
+        border-radius:20px; box-shadow:inset 0 0 0 1px rgba(46,125,50,.18);
+        color:#2E7D32; font-size:12.5px; font-weight:700;
+    }
+
+    .hidden{ display:none !important; }
+
+    @media (min-width:480px){ .app{ max-width:520px; } }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="app-header">
+    <img src="https://drdevir.com/Images/logo.jpg" alt="לוגו" class="hdr-logo" onerror="this.style.display='none'">
+    <div class="hdr-text">
+      <div class="hdr-eyebrow">זריקות הרזיה GLP1</div>
+      <h1 class="page-title">מחשבון מינון וקליקים</h1>
+      <div class="hdr-credit">ד״ר אורי דביר</div>
+    </div>
+  </header>
+
+  <div class="card">
+    <div class="intro-title">💡 מה זה טיפול GLP-1?</div>
+    <div class="intro-text">
+      תרופות ממשפחת GLP-1 (כגון Semaglutide בוויגובי ו-Tirzepatide במונג׳רו) ניתנות בזריקה שבועית ומסייעות בירידה במשקל ובאיזון רמות הסוכר בדם, על ידי האטת התרוקנות הקיבה והפחתת תחושת הרעב. המינון עולה בהדרגה על פי הנחיית הרופא/ה המטפל/ת, בהתאם לתגובת הגוף ולתופעות הלוואי.
+    </div>
+
+    <div class="warn-box">
+      <strong>⚠️ ספירת קליקים היא שיטה לא-רשמית בלבד</strong>
+      <p>היצרנים אינם מציגים אותה כמדויקת. יש לפעול תמיד לפי הנחיית הרופא/ה ואין לשנות מינון עצמאית.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="step-label"><span class="n">1</span> בחר/י תרופה</div>
+    <div class="med-grid" id="medGrid">
+      <button class="med-btn" data-med="wegovy">וויגובי<span class="tag">Semaglutide</span></button>
+      <button class="med-btn" data-med="mounjaro">מונג׳רו<span class="tag">Tirzepatide</span></button>
+    </div>
+  </div>
+
+  <div class="card hidden" id="penCard">
+    <div class="step-label"><span class="n">2</span> בחר/י מינון העט</div>
+    <div class="pen-grid" id="penGrid"></div>
+  </div>
+
+  <div class="card hidden" id="calcCard">
+    <div class="step-label"><span class="n">3</span> חשב/י</div>
+
+    <div class="toggle" id="modeToggle">
+      <div class="toggle-slider"></div>
+      <button data-mode="doseToClicks" class="active">מינון ← קליקים</button>
+      <button data-mode="clicksToDose">קליקים ← מינון</button>
+    </div>
+
+    <div class="field">
+      <label id="fieldLabel">הזן מינון רצוי (מ״ג)</label>
+      <div class="input-wrap">
+        <input type="number" id="inputVal" inputmode="decimal" step="any" placeholder="לדוגמה: 0.5">
+        <span class="unit" id="unitLabel">מ״ג</span>
+      </div>
+      <div class="error-msg" id="errorMsg"></div>
+    </div>
+
+    <button class="calc-btn" id="calcBtn" disabled>חשב</button>
+
+    <div class="result hidden" id="resultBox">
+      <div class="result-badge">✅</div>
+      <div class="result-label">התוצאה שלך</div>
+      <div class="value" id="resultValue">—</div>
+      <div class="from" id="resultFrom"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // Full-pen click counts: verified against manufacturer pen mechanics.
+  // Wegovy FlexTouch: 74 clicks = full labeled dose, any strength.
+  // Mounjaro KwikPen (multi-dose): 60 clicks = full labeled dose, any strength.
+  const MEDS = {
+    wegovy: {
+      label: 'וויגובי',
+      totalClicks: 74,
+      pens: [0.25, 0.5, 1.0, 1.7, 2.4]
+    },
+    mounjaro: {
+      label: 'מונג׳רו',
+      totalClicks: 60,
+      pens: [2.5, 5, 7.5, 10, 12.5, 15]
+    }
+  };
+
+  let state = {
+    med: null,
+    pen: null,
+    mode: 'doseToClicks'
+  };
+
+  const medGrid = document.getElementById('medGrid');
+  const penCard = document.getElementById('penCard');
+  const penGrid = document.getElementById('penGrid');
+  const calcCard = document.getElementById('calcCard');
+  const modeToggle = document.getElementById('modeToggle');
+  const fieldLabel = document.getElementById('fieldLabel');
+  const unitLabel = document.getElementById('unitLabel');
+  const inputVal = document.getElementById('inputVal');
+  const errorMsg = document.getElementById('errorMsg');
+  const calcBtn = document.getElementById('calcBtn');
+  const resultBox = document.getElementById('resultBox');
+  const resultValue = document.getElementById('resultValue');
+  const resultFrom = document.getElementById('resultFrom');
+
+  function fmt(n){
+    // trims trailing zeros, keeps up to 3 decimals
+    return (Math.round(n * 1000) / 1000).toString();
+  }
+
+  medGrid.addEventListener('click', (e) => {
+    const btn = e.target.closest('.med-btn');
+    if(!btn) return;
+    state.med = btn.dataset.med;
+    state.pen = null;
+    [...medGrid.children].forEach(b => b.classList.toggle('selected', b === btn));
+    renderPens();
+    penCard.classList.remove('hidden');
+    calcCard.classList.add('hidden');
+    resetResult();
+  });
+
+  function renderPens(){
+    const med = MEDS[state.med];
+    penGrid.innerHTML = '';
+    med.pens.forEach(mg => {
+      const b = document.createElement('button');
+      b.className = 'pen-btn';
+      b.dataset.pen = mg;
+      b.textContent = fmt(mg) + ' מ״ג';
+      penGrid.appendChild(b);
+    });
+  }
+
+  penGrid.addEventListener('click', (e) => {
+    const btn = e.target.closest('.pen-btn');
+    if(!btn) return;
+    state.pen = parseFloat(btn.dataset.pen);
+    [...penGrid.children].forEach(b => b.classList.toggle('selected', b === btn));
+    calcCard.classList.remove('hidden');
+    updateFieldUI();
+    resetResult();
+  });
+
+  modeToggle.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-mode]');
+    if(!btn) return;
+    state.mode = btn.dataset.mode;
+    modeToggle.querySelectorAll('button[data-mode]').forEach(b => b.classList.toggle('active', b === btn));
+    modeToggle.classList.toggle('mode-clicks', state.mode === 'clicksToDose');
+    updateFieldUI();
+    resetResult();
+  });
+
+  function updateFieldUI(){
+    const med = MEDS[state.med];
+    if(state.mode === 'doseToClicks'){
+      fieldLabel.innerHTML = 'הזן מינון רצוי (מ״ג) <span class="range-hint">— עד ' + fmt(state.pen) + ' מ״ג</span>';
+      unitLabel.textContent = 'מ״ג';
+      inputVal.placeholder = 'לדוגמה: ' + fmt(state.pen/2);
+    } else {
+      fieldLabel.innerHTML = 'הזן מספר קליקים <span class="range-hint">— טווח 1–' + med.totalClicks + '</span>';
+      unitLabel.textContent = 'קליקים';
+      inputVal.placeholder = 'לדוגמה: ' + Math.round(med.totalClicks/2);
+    }
+    inputVal.value = '';
+    validate();
+  }
+
+  inputVal.addEventListener('input', validate);
+
+  function validate(){
+    const med = MEDS[state.med];
+    const raw = inputVal.value.trim();
+    errorMsg.textContent = '';
+    calcBtn.disabled = true;
+
+    if(raw === '') return;
+    const v = parseFloat(raw);
+    if(isNaN(v) || v <= 0){
+      errorMsg.textContent = 'יש להזין ערך מספרי חיובי.';
+      return;
+    }
+    if(state.mode === 'doseToClicks'){
+      if(v > state.pen){
+        errorMsg.textContent = 'המינון חייב להיות עד המקסימום של העט שנבחר (' + fmt(state.pen) + ' מ״ג).';
+        return;
+      }
+    } else {
+      if(v > med.totalClicks){
+        errorMsg.textContent = 'יש להזין מספר קליקים בין 1 ל־' + med.totalClicks + '.';
+        return;
+      }
+    }
+    calcBtn.disabled = false;
+  }
+
+  calcBtn.addEventListener('click', () => {
+    const med = MEDS[state.med];
+    const v = parseFloat(inputVal.value);
+    const mgPerClick = state.pen / med.totalClicks;
+
+    if(state.mode === 'doseToClicks'){
+      const clicks = Math.round(v / mgPerClick);
+      resultValue.innerHTML = clicks + ' <small>קליקים</small>';
+      resultFrom.textContent = fmt(v) + ' מ״ג מתוך עט ' + fmt(state.pen) + ' מ״ג (' + med.label + ')';
+    } else {
+      const mg = v * mgPerClick;
+      resultValue.innerHTML = fmt(mg) + ' <small>מ״ג</small>';
+      resultFrom.textContent = v + ' קליקים מתוך עט ' + fmt(state.pen) + ' מ״ג (' + med.label + ')';
+    }
+    resultBox.classList.remove('hidden');
+  });
+
+  function resetResult(){
+    resultBox.classList.add('hidden');
+    calcBtn.disabled = true;
+  }
+})();
+</script>
+</body>
+</html>
