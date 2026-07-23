@@ -90,10 +90,33 @@
     .step-label .n { width:26px; height:26px; border-radius:50%; background:var(--pri); color:#fff; font-size:13px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
 
     /* Buttons & controls tuned to BP palette */
-    .med-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-    .med-btn{ border-radius:12px; padding:14px; text-align:center; cursor:pointer; font-weight:700; font-size:15px; background:#FAFCFF; border:2px solid var(--border); color:var(--pri-dark); transition:all .15s; }
+    /* med-grid copies the exact "toggle" slider pattern below: one pill-shaped
+       container (background+padding), transparent buttons, and a sliding
+       highlight inset by the container's own padding/gap — so there's no seam
+       between the two options and the slide reads as one continuous motion. */
+    .med-grid{
+        --med-gap:6px; --med-pad:6px;
+        position:relative; display:flex; gap:var(--med-gap);
+        background:linear-gradient(90deg,#F4F8FF,#EFF7FF);
+        padding:var(--med-pad);
+        border-radius:14px;
+    }
+    .med-slider{
+        position:absolute; top:var(--med-pad); right:var(--med-pad);
+        width:calc(50% - (var(--med-pad) + var(--med-gap) / 2));
+        height:calc(100% - var(--med-pad) * 2);
+        background:linear-gradient(135deg,var(--pri-dark),var(--pri-mid));
+        border-radius:10px;
+        box-shadow:0 4px 14px rgba(21,101,192,.4);
+        opacity:0;
+        transition:transform .28s cubic-bezier(.4,0,.2,1), opacity .25s ease;
+        z-index:0;
+    }
+    .med-grid.has-selection .med-slider{ opacity:1; }
+    .med-grid.med-mounjaro .med-slider{ transform:translateX(calc(-100% - var(--med-gap))); }
+    .med-btn{ position:relative; z-index:1; flex:1; border:none; border-radius:10px; padding:14px; text-align:center; cursor:pointer; font-weight:700; font-size:15px; background:transparent; color:var(--pri-dark); font-family:inherit; transition:color .2s; }
     .med-btn .tag{ display:block; font-size:12px; color:var(--text2); margin-top:6px; font-weight:600; transition:color .15s; }
-    .med-btn.selected{ background:linear-gradient(135deg,var(--pri-dark),var(--pri-mid)); color:#fff; box-shadow:0 6px 20px rgba(21,101,192,.18); border-color:transparent; }
+    .med-btn.selected{ color:#fff; }
     .med-btn.selected .tag{ color:#fff; opacity:.85; }
 
     .pen-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
@@ -150,12 +173,14 @@
     }
     .result:not(.hidden){ animation:result-pop .35s cubic-bezier(.34,1.56,.64,1); }
     @keyframes result-pop{ from{ opacity:0; transform:scale(.92) translateY(6px); } to{ opacity:1; transform:scale(1) translateY(0); } }
+    .result-headline{ display:flex; flex-direction:column; align-items:center; }
     .result-badge{
         width:42px; height:42px; border-radius:50%; margin:0 auto 10px;
         background:linear-gradient(135deg,#43A047,#2E7D32);
         color:#fff; font-size:21px;
         display:flex; align-items:center; justify-content:center;
         box-shadow:0 6px 16px rgba(46,125,50,.35);
+        flex-shrink:0;
     }
     .result-label{ font-size:12px; font-weight:700; letter-spacing:.02em; color:#2E7D32; opacity:.8; margin-bottom:6px; }
     .result .value{ font-size:46px; font-weight:900; color:#1B5E20; letter-spacing:-1px; line-height:1.1; }
@@ -168,6 +193,7 @@
     }
 
     .hidden{ display:none !important; }
+    .desktop-extra{ display:none; }
 
     @media (min-width:480px){ .app{ max-width:520px; } }
 
@@ -194,12 +220,16 @@
             gap:clamp(10px, 1.6vh, 22px);
         }
         header.app-header{ grid-area:header; margin-bottom:0; padding:clamp(10px,1.8vh,20px) 18px; }
-        #introCard{ grid-area:intro; margin-bottom:0; max-height:100%; overflow-y:auto; display:flex; flex-direction:column; justify-content:safe center; }
+        #introCard{
+            grid-area:intro; margin-bottom:0; max-height:100%; overflow-y:auto;
+            display:flex; flex-direction:column; justify-content:flex-start;
+            padding:clamp(18px,2.8vh,34px);
+        }
         .steps-col{
             grid-area:steps;
             display:flex;
             flex-direction:column;
-            justify-content:safe center;
+            justify-content:flex-start;
             gap:clamp(8px, 1.6vh, 22px);
             min-height:0;
             max-height:100%;
@@ -207,16 +237,44 @@
         }
         .steps-col .card{ margin-bottom:0; }
         .card{ padding:clamp(10px, 2vh, 26px); }
-        .intro-title{ margin-bottom:clamp(6px,1vh,12px); font-size:clamp(13.5px,1.6vh,17px); }
-        .intro-text{ font-size:clamp(12.5px,1.5vh,15px); line-height:1.6; }
-        .warn-box{ padding:clamp(8px,1.4vh,16px) clamp(12px,1.8vh,18px); margin-top:clamp(8px,1.2vh,16px); }
-        .warn-box strong{ font-size:clamp(12px,1.5vh,15px); margin-bottom:clamp(2px,0.4vh,5px); }
-        .warn-box p{ font-size:clamp(11px,1.35vh,13.5px); }
+
+        /* calcCard absorbs any leftover column height (medCard/penCard keep their
+           natural compact size) instead of leaving dead space below the result;
+           its own content centers within whatever extra room that gives it. */
+        #calcCard{ display:flex; flex-direction:column; flex:1 1 auto; justify-content:center; }
+        .result{ flex:1 1 auto; display:flex; flex-direction:column; justify-content:center; align-items:center; }
+
+        /* step reveal: each step slides down + fades in directly below the previous one,
+           instead of the whole column re-centering. Restarts automatically whenever a
+           card's `.hidden` class is toggled off (display:none -> flex triggers replay). */
+        @keyframes stepReveal{
+            from{ opacity:0; transform:translateY(-18px); }
+            to{ opacity:1; transform:translateY(0); }
+        }
+        .steps-col .card{ animation:stepReveal .45s cubic-bezier(.22,.68,0,1.2); }
+
+        .desktop-extra{ display:block; }
+
+        .intro-title{ margin-bottom:clamp(10px,1.6vh,16px); font-size:clamp(16px,2.1vh,20px); }
+        .intro-text{ font-size:clamp(14.5px,1.8vh,17px); line-height:1.75; }
+        .warn-box{ padding:clamp(14px,2vh,22px) clamp(16px,2.2vh,24px); margin-top:clamp(14px,1.8vh,22px); }
+        .warn-box strong{ font-size:clamp(14px,1.8vh,17px); margin-bottom:clamp(4px,0.6vh,8px); }
+        .warn-box p{ font-size:clamp(13px,1.6vh,15.5px); line-height:1.6; }
+
+        .tip-block{
+            background:linear-gradient(135deg, #E3F2FD, #F5FAFF);
+            border:1px solid var(--border);
+            border-radius:12px;
+            padding:clamp(12px,1.8vh,18px) clamp(14px,2vh,20px);
+            margin-top:clamp(12px,1.8vh,20px);
+        }
+        .tip-block strong{ display:block; font-size:clamp(13.5px,1.7vh,16px); font-weight:800; color:var(--pri-dark); margin-bottom:clamp(3px,0.6vh,6px); }
+        .tip-block p{ font-size:clamp(12.5px,1.5vh,14.5px); line-height:1.65; color:var(--text2); margin:0; }
 
         .step-label{ margin-bottom:clamp(6px,1.2vh,16px); font-size:clamp(13.5px,1.7vh,17px); gap:8px; }
         .step-label .n{ width:clamp(20px,2.6vh,28px); height:clamp(20px,2.6vh,28px); font-size:clamp(11.5px,1.4vh,14px); }
 
-        .med-grid{ gap:clamp(6px,1.2vh,14px); }
+        .med-grid{ --med-pad:clamp(4px,0.7vh,7px); }
         .med-btn{ padding:clamp(8px,1.6vh,17px); font-size:clamp(13.5px,1.6vh,16px); }
         .med-btn .tag{ margin-top:clamp(2px,0.5vh,6px); font-size:clamp(11px,1.2vh,12.5px); }
 
@@ -227,19 +285,62 @@
         .toggle button{ padding:clamp(6px,1.3vh,12px); font-size:clamp(13.5px,1.5vh,15px); }
         .toggle-slider{ top:clamp(4px,0.7vh,7px); width:calc(50% - 6px); height:calc(100% - 8px); }
 
-        .field{ margin-top:clamp(8px,1.6vh,20px); }
-        .field label{ margin-bottom:clamp(4px,0.8vh,10px); font-size:clamp(12px,1.4vh,14px); }
-        input[type=number]{ padding:clamp(7px,1.6vh,15px) 78px clamp(7px,1.6vh,15px) 12px; font-size:clamp(14px,1.6vh,16px); }
-        .error-msg{ margin-top:clamp(3px,0.6vh,7px); min-height:13px; font-size:clamp(11.5px,1.3vh,13px); }
+        #calcCard .step-label{ margin-bottom:clamp(4px,0.8vh,10px); }
 
-        .calc-btn{ padding:clamp(8px,1.8vh,16px); margin-top:clamp(8px,1.6vh,20px); font-size:clamp(13.5px,1.6vh,16px); }
+        .field{ margin-top:clamp(5px,0.9vh,12px); }
+        .field label{ margin-bottom:clamp(3px,0.6vh,8px); font-size:clamp(12px,1.4vh,14px); }
+        input[type=number]{ padding:clamp(6px,1.3vh,12px) 78px clamp(6px,1.3vh,12px) 12px; font-size:clamp(14px,1.6vh,16px); }
+        .error-msg{ margin-top:clamp(2px,0.5vh,6px); min-height:13px; font-size:clamp(11.5px,1.3vh,13px); }
 
-        .result{ margin-top:clamp(8px,1.6vh,20px); border-radius:16px; padding:clamp(10px,2.2vh,30px) clamp(14px,2vh,22px) clamp(9px,1.8vh,24px); }
-        .result-badge{ width:clamp(24px,4vh,46px); height:clamp(24px,4vh,46px); font-size:clamp(12px,2.2vh,23px); margin-bottom:clamp(4px,1vh,11px); }
-        .result-label{ font-size:clamp(10.5px,1.2vh,13px); margin-bottom:clamp(3px,0.7vh,7px); }
-        .result .value{ font-size:clamp(23px,5vh,48px); }
-        .result .value small{ font-size:clamp(12px,1.9vh,19px); }
-        .result .from{ margin-top:clamp(6px,1.4vh,15px); padding:clamp(3px,0.7vh,7px) 16px; font-size:clamp(10.5px,1.3vh,13px); }
+        .calc-btn{ padding:clamp(6px,1.2vh,12px); margin-top:clamp(5px,0.9vh,12px); font-size:clamp(13px,1.5vh,15px); }
+
+        .result{ margin-top:clamp(6px,1.1vh,14px); border-radius:20px; padding:clamp(18px,3vh,36px) clamp(28px,4vw,48px); }
+
+        /* On desktop the result has room to spread horizontally: icon sits
+           beside the headline instead of stacked above it, and gets much bigger
+           since it's no longer squeezed into a narrow mobile column. */
+        .result-headline{ flex-direction:row; justify-content:center; align-items:center; gap:clamp(18px,2.6vw,32px); }
+        .result-badge{ width:clamp(56px,9vh,92px); height:clamp(56px,9vh,92px); font-size:clamp(26px,4.4vh,44px); margin:0; flex-shrink:0; }
+        .result-label{ font-size:clamp(12px,1.4vh,15px); margin-bottom:clamp(4px,0.9vh,9px); }
+        .result .value{ font-size:clamp(30px,6vh,58px); }
+        .result .value small{ font-size:clamp(14px,2.2vh,22px); }
+        .result .from{ margin-top:clamp(10px,1.8vh,18px); padding:clamp(5px,1vh,8px) 18px; font-size:clamp(11.5px,1.35vh,14px); }
+
+        /* Extra breakdown row — desktop-only, fills the width below the headline
+           with a progress bar (how much of the pen this dose uses) plus a
+           per-click stat, so the wide result box isn't left mostly empty. */
+        .result-breakdown{ width:100%; max-width:420px; margin:clamp(14px,2.2vh,22px) auto 0; }
+        .result-bar-track{ width:100%; height:10px; background:rgba(46,125,50,.15); border-radius:99px; overflow:hidden; }
+        .result-bar-fill{ height:100%; width:0%; background:linear-gradient(90deg,#43A047,#2E7D32); border-radius:99px; transition:width .5s cubic-bezier(.4,0,.2,1); }
+        .result-extra{ margin-top:clamp(8px,1.3vh,12px); font-size:clamp(12px,1.35vh,14px); font-weight:600; color:#2E7D32; opacity:.85; text-align:center; }
+
+        /* Compact header + column spacing further once the result step is active,
+           reclaiming the extra vertical room needed to avoid scrolling. */
+        .app:has(#calcCard:not(.hidden)){ gap:clamp(6px,1vh,14px); }
+        .app:has(#calcCard:not(.hidden)) header.app-header{ padding:clamp(6px,1vh,12px) 18px; }
+        .steps-col:has(#calcCard:not(.hidden)){ gap:clamp(5px,0.9vh,12px); }
+
+        /* Once the calc step is reached, the earlier (already-answered) steps
+           compact themselves so the full flow — including the result — fits
+           on screen without needing to scroll. */
+        .steps-col:has(#calcCard:not(.hidden)) #medCard,
+        .steps-col:has(#calcCard:not(.hidden)) #penCard{
+            padding:clamp(8px,1vh,14px);
+        }
+        .steps-col:has(#calcCard:not(.hidden)) #medCard .step-label,
+        .steps-col:has(#calcCard:not(.hidden)) #penCard .step-label{
+            margin-bottom:clamp(4px,0.6vh,8px);
+            font-size:clamp(12px,1.3vh,14px);
+        }
+        .steps-col:has(#calcCard:not(.hidden)) #medCard .step-label .n,
+        .steps-col:has(#calcCard:not(.hidden)) #penCard .step-label .n{
+            width:clamp(16px,1.8vh,20px); height:clamp(16px,1.8vh,20px); font-size:clamp(10px,1vh,11px);
+        }
+        .steps-col:has(#calcCard:not(.hidden)) .med-btn,
+        .steps-col:has(#calcCard:not(.hidden)) .pen-btn{
+            padding:clamp(5px,0.8vh,9px); font-size:clamp(11.5px,1.2vh,13px);
+        }
+        .steps-col:has(#calcCard:not(.hidden)) .med-btn .tag{ display:none; }
     }
 </style>
 </head>
@@ -265,12 +366,23 @@
       <strong>⚠️ ספירת קליקים היא שיטה לא-רשמית בלבד</strong>
       <p>היצרנים אינם מציגים אותה כמדויקת. יש לפעול תמיד לפי הנחיית הרופא/ה ואין לשנות מינון עצמאית.</p>
     </div>
+
+    <div class="tip-block desktop-extra">
+      <strong>🧮 איך משתמשים במחשבון?</strong>
+      <p>בחרו את התרופה ואת מינון העט שברשותכם בטור השני, ואז עברו בין "מינון ← קליקים" ל"קליקים ← מינון" כדי להמיר בין הערכים בשני הכיוונים.</p>
+    </div>
+
+    <div class="tip-block desktop-extra">
+      <strong>📌 טיפ לדיוק בספירת קליקים</strong>
+      <p>סובבו את חוגת המינון באיטיות ובעצירות קבועות, וספרו כל "קליק" שנשמע בבירור. ספירה מהירה מדי עלולה להחסיר או להכפיל קליקים בטעות.</p>
+    </div>
   </div>
 
   <div class="steps-col">
     <div class="card" id="medCard">
       <div class="step-label"><span class="n">1</span> בחר/י תרופה</div>
       <div class="med-grid" id="medGrid">
+        <div class="med-slider"></div>
         <button class="med-btn" data-med="wegovy">וויגובי<span class="tag">Semaglutide</span></button>
         <button class="med-btn" data-med="mounjaro">מונג׳רו<span class="tag">Tirzepatide</span></button>
       </div>
@@ -302,10 +414,18 @@
       <button class="calc-btn" id="calcBtn" disabled>חשב</button>
 
       <div class="result hidden" id="resultBox">
-        <div class="result-badge">✅</div>
-        <div class="result-label">התוצאה שלך</div>
-        <div class="value" id="resultValue">—</div>
+        <div class="result-headline">
+          <div class="result-badge">✅</div>
+          <div class="result-text">
+            <div class="result-label">התוצאה שלך</div>
+            <div class="value" id="resultValue">—</div>
+          </div>
+        </div>
         <div class="from" id="resultFrom"></div>
+        <div class="result-breakdown desktop-extra">
+          <div class="result-bar-track"><div class="result-bar-fill" id="resultBarFill"></div></div>
+          <div class="result-extra" id="resultExtra"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -348,10 +468,21 @@
   const resultBox = document.getElementById('resultBox');
   const resultValue = document.getElementById('resultValue');
   const resultFrom = document.getElementById('resultFrom');
+  const resultBarFill = document.getElementById('resultBarFill');
+  const resultExtra = document.getElementById('resultExtra');
 
   function fmt(n){
     // trims trailing zeros, keeps up to 3 decimals
     return (Math.round(n * 1000) / 1000).toString();
+  }
+
+  // Shows a step card, forcing a hidden->visible cycle even if it was already
+  // open — so on desktop the reveal animation replays whenever an earlier
+  // choice changes (the step visibly closes/resets and reopens).
+  function showStep(el){
+    el.classList.add('hidden');
+    void el.offsetWidth; // force reflow so display:none is committed before removing it
+    el.classList.remove('hidden');
   }
 
   medGrid.addEventListener('click', (e) => {
@@ -359,11 +490,13 @@
     if(!btn) return;
     state.med = btn.dataset.med;
     state.pen = null;
-    [...medGrid.children].forEach(b => b.classList.toggle('selected', b === btn));
+    [...medGrid.querySelectorAll('.med-btn')].forEach(b => b.classList.toggle('selected', b === btn));
+    medGrid.classList.add('has-selection');
+    medGrid.classList.toggle('med-mounjaro', state.med === 'mounjaro');
     renderPens();
-    penCard.classList.remove('hidden');
     calcCard.classList.add('hidden');
     resetResult();
+    showStep(penCard);
   });
 
   function renderPens(){
@@ -383,9 +516,9 @@
     if(!btn) return;
     state.pen = parseFloat(btn.dataset.pen);
     [...penGrid.children].forEach(b => b.classList.toggle('selected', b === btn));
-    calcCard.classList.remove('hidden');
     updateFieldUI();
     resetResult();
+    showStep(calcCard);
   });
 
   modeToggle.addEventListener('click', (e) => {
@@ -445,16 +578,23 @@
     const med = MEDS[state.med];
     const v = parseFloat(inputVal.value);
     const mgPerClick = state.pen / med.totalClicks;
+    let clicks;
 
     if(state.mode === 'doseToClicks'){
-      const clicks = Math.round(v / mgPerClick);
+      clicks = Math.round(v / mgPerClick);
       resultValue.innerHTML = clicks + ' <small>קליקים</small>';
       resultFrom.textContent = fmt(v) + ' מ״ג מתוך עט ' + fmt(state.pen) + ' מ״ג (' + med.label + ')';
     } else {
+      clicks = v;
       const mg = v * mgPerClick;
       resultValue.innerHTML = fmt(mg) + ' <small>מ״ג</small>';
       resultFrom.textContent = v + ' קליקים מתוך עט ' + fmt(state.pen) + ' מ״ג (' + med.label + ')';
     }
+
+    const pct = Math.min(100, Math.max(0, (clicks / med.totalClicks) * 100));
+    resultBarFill.style.width = pct.toFixed(0) + '%';
+    resultExtra.textContent = 'כל קליק שווה ל-' + fmt(mgPerClick) + ' מ״ג · ' + Math.round(pct) + '% מהעט (' + clicks + ' מתוך ' + med.totalClicks + ' קליקים)';
+
     resultBox.classList.remove('hidden');
   });
 
