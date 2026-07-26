@@ -43,10 +43,12 @@
 
     /* Header styled like BP app */
     header.app-header {
+        position:relative;
         background: linear-gradient(135deg, var(--pri-dark) 0%, var(--pri) 55%, var(--pri-mid) 100%);
         color: #fff;
-        padding: 14px 18px 12px;
+        padding: 26px 18px;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         gap: 12px;
@@ -54,11 +56,65 @@
         border-radius: var(--r);
         margin-bottom:16px;
     }
-    .hdr-logo { width:52px; height:52px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,.5); background:#fff; flex-shrink:0; }
     .hdr-text { text-align:center; }
-    .hdr-eyebrow { font-size:11px; font-weight:700; letter-spacing:.03em; color:rgba(255,255,255,.85); margin-bottom:2px; }
-    .hdr-text h1.page-title { font-size:18px; font-weight:700; line-height:1.2; color:#fff; margin:0; }
-    .hdr-credit { font-size:14px; font-weight:700; color:#fff; margin-top:4px; }
+    .hdr-eyebrow {
+        display:inline-flex; align-items:center; gap:5px;
+        font-size:11px; font-weight:700; letter-spacing:.05em;
+        color:#fff; background:rgba(255,255,255,.16);
+        border:1px solid rgba(255,255,255,.3);
+        border-radius:99px; padding:3px 12px;
+        margin-bottom:8px;
+    }
+    .hdr-text h1.page-title {
+        font-size:21px; font-weight:800; line-height:1.25;
+        color:#fff; margin:0; letter-spacing:.01em;
+        text-shadow:0 2px 10px rgba(0,0,0,.18);
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       DEV CREDIT BADGE — reusable across every DrDevir.com app.
+       Mobile: sits below the title, in normal flow (see `order` below).
+       Desktop (≥900px): pinned to the header's top-left corner instead —
+       see the position:absolute override inside the desktop media query.
+       Self-contained: only uses #fff/rgba tones, so it drops into any
+       app header with a colored (non-white) background as-is — no
+       per-app color tuning needed.
+       ══════════════════════════════════════════════════════════════ */
+    /* font-size below is the single scale knob: every other measurement in this
+       block is in em, so resizing the badge (change this one value) resizes the
+       icon, padding, gap and text together, proportionally, automatically. */
+    .dev-credit{
+        position:static; order:1; z-index:2;
+        font-size:14px;
+        display:inline-flex; align-items:center; gap:0.72em;
+        padding:0.64em 1em 0.64em 0.5em;
+        border-radius:1.43em;
+        background:linear-gradient(135deg, #43A047 0%, #2E7D32 100%);
+        border:1px solid rgba(255,255,255,.3);
+        color:#fff; text-decoration:none;
+        box-shadow:0 3px 12px rgba(0,0,0,.22);
+        transition:filter .2s ease, transform .2s ease, box-shadow .2s ease;
+        max-width:calc(100% - 20px);
+    }
+    .dev-credit:hover, .dev-credit:focus-visible{
+        filter:brightness(1.1);
+        transform:translateY(-1px);
+        box-shadow:0 6px 18px rgba(0,0,0,.3);
+    }
+    .dev-credit-icon{
+        display:flex; align-items:center; justify-content:center;
+        width:2.86em; height:2.86em; flex-shrink:0;
+        border-radius:50%;
+        background:#fff;
+        line-height:1;
+        box-shadow:0 1px 6px rgba(0,0,0,.25);
+    }
+    .dev-credit-icon-glyph{ font-size:2.2em; line-height:1; }
+    .dev-credit-text{ display:flex; flex-direction:column; align-items:center; gap:0.14em; min-width:0; }
+    .dev-credit-line1{ font-size:0.85em; font-weight:600; opacity:.9; white-space:nowrap; }
+    .dev-credit-line2{ font-size:1.15em; font-weight:800; letter-spacing:.01em; white-space:nowrap; }
+    .dev-credit-arrow{ font-size:1em; opacity:.8; display:inline-block; transition:transform .2s ease; }
+    .dev-credit:hover .dev-credit-arrow{ transform:translate(2px,-2px); }
 
     /* Cards */
     .card {
@@ -219,7 +275,10 @@
                 "intro  steps";
             gap:clamp(10px, 1.6vh, 22px);
         }
-        header.app-header{ grid-area:header; margin-bottom:0; padding:clamp(10px,1.8vh,20px) 18px; }
+        header.app-header{ grid-area:header; margin-bottom:0; padding:calc((44px + clamp(10px,1.8vh,20px)) / 2) 18px; flex-direction:row; }
+        /* desktop has room beside the title, so the credit goes back to a
+           corner badge instead of the mobile stacked-below layout */
+        .dev-credit{ position:absolute; top:0; bottom:0; height:75%; margin:auto 0; left:10px; order:initial; }
         #introCard{
             grid-area:intro; margin-bottom:0; max-height:100%; overflow-y:auto;
             display:flex; flex-direction:column; justify-content:flex-start;
@@ -238,11 +297,11 @@
         .steps-col .card{ margin-bottom:0; }
         .card{ padding:clamp(10px, 2vh, 26px); }
 
-        /* calcCard absorbs any leftover column height (medCard/penCard keep their
-           natural compact size) instead of leaving dead space below the result;
-           its own content centers within whatever extra room that gives it. */
-        #calcCard{ display:flex; flex-direction:column; flex:1 1 auto; justify-content:center; }
-        .result{ flex:1 1 auto; display:flex; flex-direction:column; justify-content:center; align-items:center; }
+        /* calcCard sizes to its own content — same as medCard/penCard — so it sits
+           directly under step 2 with just the column gap between them, instead of
+           stretching to fill the leftover column height. */
+        #calcCard{ display:flex; flex-direction:column; }
+        .result{ display:flex; flex-direction:column; justify-content:center; align-items:center; }
 
         /* step reveal: each step slides down + fades in directly below the previous one,
            instead of the whole column re-centering. Restarts automatically whenever a
@@ -317,7 +376,7 @@
         /* Compact header + column spacing further once the result step is active,
            reclaiming the extra vertical room needed to avoid scrolling. */
         .app:has(#calcCard:not(.hidden)){ gap:clamp(6px,1vh,14px); }
-        .app:has(#calcCard:not(.hidden)) header.app-header{ padding:clamp(6px,1vh,12px) 18px; }
+        .app:has(#calcCard:not(.hidden)) header.app-header{ padding:calc((44px + clamp(6px,1vh,12px)) / 2) 18px; }
         .steps-col:has(#calcCard:not(.hidden)){ gap:clamp(5px,0.9vh,12px); }
 
         /* Once the calc step is reached, the earlier (already-answered) steps
@@ -348,11 +407,16 @@
 
 <div class="app">
   <header class="app-header">
-    <img src="https://drdevir.com/Images/logo.jpg" alt="לוגו" class="hdr-logo" onerror="this.style.display='none'">
+    <a href="https://drdevir.com" target="_blank" rel="noopener" class="dev-credit">
+      <span class="dev-credit-icon"><span class="dev-credit-icon-glyph">⚕️</span></span>
+      <span class="dev-credit-text">
+        <span class="dev-credit-line1">אפליקציה זו נוצרה על ידי</span>
+        <span class="dev-credit-line2">ד״ר אורי דביר · DrDevir.com <span class="dev-credit-arrow">↗</span></span>
+      </span>
+    </a>
     <div class="hdr-text">
       <div class="hdr-eyebrow">זריקות הרזיה GLP1</div>
       <h1 class="page-title">מחשבון מינון וקליקים</h1>
-      <div class="hdr-credit">ד״ר אורי דביר</div>
     </div>
   </header>
 
@@ -485,6 +549,15 @@
     el.classList.remove('hidden');
   }
 
+  // Mobile only (desktop fits the whole flow on screen with no page scroll):
+  // after a step opens, scroll the page down so the newly revealed card is in view.
+  function scrollToStep(el){
+    if (window.matchMedia('(min-width:900px)').matches) return;
+    requestAnimationFrame(() => {
+      el.scrollIntoView({ behavior:'smooth', block:'start' });
+    });
+  }
+
   medGrid.addEventListener('click', (e) => {
     const btn = e.target.closest('.med-btn');
     if(!btn) return;
@@ -497,6 +570,7 @@
     calcCard.classList.add('hidden');
     resetResult();
     showStep(penCard);
+    scrollToStep(penCard);
   });
 
   function renderPens(){
@@ -519,6 +593,7 @@
     updateFieldUI();
     resetResult();
     showStep(calcCard);
+    scrollToStep(calcCard);
   });
 
   modeToggle.addEventListener('click', (e) => {
@@ -596,6 +671,7 @@
     resultExtra.textContent = 'כל קליק שווה ל-' + fmt(mgPerClick) + ' מ״ג · ' + Math.round(pct) + '% מהעט (' + clicks + ' מתוך ' + med.totalClicks + ' קליקים)';
 
     resultBox.classList.remove('hidden');
+    scrollToStep(resultBox);
   });
 
   function resetResult(){
