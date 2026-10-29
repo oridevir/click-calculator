@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>זריקות הרזיה GLP1 - מחשבון מינון וקליקים</title>
 <!-- קיצור דרך במסך הבית -->
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
@@ -468,7 +468,8 @@ header.app-header::after { content: ""; position: absolute; left: 0; right: 0; b
 .med-grid, .toggle { background: rgba(255,255,255,.55); border: 1px solid #fff; border-radius: 20px; box-shadow: 0 10px 24px -18px rgba(0,0,0,.35); }
 .med-slider, .toggle-slider { background: linear-gradient(100deg, var(--pri-dark), var(--pri) 60%, var(--pri-mid)); border-radius: 15px; box-shadow: 0 8px 20px -8px var(--pri); }
 .med-btn, .toggle button { color: var(--text2); font-size: 16px; }
-.med-btn .tag { color: var(--text2); }
+.med-btn .tag { color: #5A4C70; }
+.med-btn.selected .tag { color: #fff; opacity: 1; }
 
 .pen-btn { background: rgba(255,255,255,.8); border: 1px solid #fff; border-radius: 16px; color: var(--text2); font-family: inherit; font-size: 15px; padding: 12px 6px;
   box-shadow: 0 8px 18px -14px rgba(0,0,0,.3); cursor: pointer; transition: background .2s, color .2s, border-color .2s; }
@@ -531,7 +532,8 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
   .med-btn, .toggle button { font-size: clamp(13.5px,1.6vh,16px); }
   .step-label { font-size: clamp(13.5px,1.7vh,17px); }
 }
-@media (prefers-reduced-motion: reduce) { body::before, header.app-header::after, .steps-col .card, #introCard { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { body::before, header.app-header::after, .steps-col .card, #introCard { animation: none !important; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
 
 /* ── shared "life": steps tick off, mobile progress track ── */
 .step-label .n { transition: background .3s, transform .3s; }
@@ -572,7 +574,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 body { font-family: 'Rubik', 'Heebo', sans-serif; background: var(--body); color: #2A1747; }
 body::before { background: radial-gradient(60% 40% at 50% 0%, rgba(160,110,255,.35), transparent 70%), radial-gradient(50% 40% at 100% 100%, rgba(120,60,200,.3), transparent 70%); filter: none; animation: none; inset: 0; }
 header.app-header { color: #fff; }
-.hdr-eyebrow { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); color: var(--glow); font-family: 'Rubik'; letter-spacing: .14em; font-size: 11.5px; }
+.hdr-eyebrow { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); color: #DCC8FF; font-family: 'Rubik'; letter-spacing: .14em; font-size: 11.5px; }
 .hdr-text h1.page-title { color: #F4EEFF; font-weight: 800; font-size: 30px; }
 header.app-header::after { filter: brightness(1.9) saturate(.8); }
 
@@ -600,7 +602,7 @@ input[type=number] { background: var(--lcd); border: 0; border-radius: 16px; col
   box-shadow: inset 0 3px 10px rgba(0,0,0,.7), 0 1px 0 #fff; }
 input[type=number]:focus { background: var(--lcd); box-shadow: inset 0 3px 10px rgba(0,0,0,.7), 0 0 0 3px var(--pri-light); }
 input[type=number] { color: var(--pri-dark) !important; text-shadow: none !important; }
-input[type=number]::placeholder { color: color-mix(in srgb, var(--pri) 40%, transparent); }
+input[type=number]::placeholder { color: #71609A; }
 .unit { color: var(--pri); }
 .calc-btn { background: var(--pri); border-radius: 18px; box-shadow: 0 6px 0 var(--pri-dark), 0 16px 24px -10px rgba(124,77,204,.8); transition: transform .08s, box-shadow .08s; }
 .calc-btn:active:not(:disabled) { transform: translateY(5px); box-shadow: 0 1px 0 var(--pri-dark); }
@@ -609,7 +611,7 @@ input[type=number]::placeholder { color: color-mix(in srgb, var(--pri) 40%, tran
 .result { background: var(--lcd); border: 0; border-radius: 22px; box-shadow: inset 0 4px 16px rgba(0,0,0,.8), 0 1px 0 #fff; }
 .dial .knob { fill: #221338; filter: none; stroke: rgba(201,167,255,.15); }
 .dial .tk { stroke: rgba(201,167,255,.14); } .dial .tk.lit { stroke: var(--glow); filter: drop-shadow(0 0 4px var(--glow)); } .dial .tk.head { stroke: #fff; }
-.dial-n { color: #F1E8FF; text-shadow: 0 0 18px rgba(201,167,255,.8); } .dial-u { color: var(--glow); } .dial-p, .dial-sc { color: rgba(201,167,255,.6); }
+.dial-n { color: #F1E8FF; text-shadow: 0 0 18px rgba(201,167,255,.8); } .dial-u { color: var(--glow); } .dial-p, .dial-sc { color: rgba(201,167,255,.8); }
 .result .from { background: rgba(255,255,255,.06); box-shadow: inset 0 0 0 1px rgba(201,167,255,.2); color: #E6DBFF; }
 .track { color: rgba(230,219,255,.6); } .track span.on { color: #fff; } .track span::before { background: transparent; box-shadow: 0 0 0 2px rgba(201,167,255,.4); }
 .track span.on::before { background: #B7FF8A; box-shadow: 0 0 8px #B7FF8A; } .track i { background: rgba(201,167,255,.18); } .track i::after { background: var(--glow); }
@@ -621,7 +623,7 @@ input[type=number]::placeholder { color: color-mix(in srgb, var(--pri) 40%, tran
 
 /* input: the LCD is the wrapper; number + unit are centred together as one phrase ("26 קליקים") */
 .input-wrap { display: flex; min-height: 0; justify-content: center; align-items: baseline; gap: 10px; direction: ltr; background: linear-gradient(#fff, #F7F3FD); border-radius: 16px; padding: 14px 16px;
-  box-shadow: inset 0 2px 5px rgba(60,30,110,.14), 0 0 0 1px var(--edge); transition: box-shadow .2s; }
+  box-shadow: inset 0 2px 5px rgba(60,30,110,.14), 0 0 0 1px #8E7AB5; transition: box-shadow .2s; }
 .input-wrap:focus-within { box-shadow: inset 0 2px 5px rgba(60,30,110,.12), 0 0 0 2px var(--pri), 0 0 0 6px var(--pri-light); }
 .input-wrap input[type=number], .input-wrap input[type=number]:focus { width: 60px; min-width: 0; flex: none; padding: 0; background: transparent !important; border: 0 !important; box-shadow: none !important; border-radius: 0 !important; text-align: center; direction: ltr; }
 .input-wrap .unit { position: static; transform: none; order: -1; font-size: 16px; font-weight: 700; }
@@ -675,6 +677,7 @@ input[type=number]::placeholder { color: color-mix(in srgb, var(--pri) 40%, tran
   .result-extra { color: rgba(201,167,255,.65) !important; margin-top: 8px !important; line-height: 1.5; }
   .app-footer { padding-top: 10px; }
 }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 /* result details: one line each */
 .result-extra span { display: block; }
 /* phone: the credit appears only once the result is shown; under the dial, the value of one click
@@ -757,7 +760,7 @@ input[type=number]::placeholder { color: color-mix(in srgb, var(--pri) 40%, tran
       </div>
 
       <div class="field">
-        <label id="fieldLabel">הזן מינון רצוי (מ״ג)</label>
+        <label id="fieldLabel" for="inputVal">הזן מינון רצוי (מ״ג)</label>
         <div class="input-wrap">
           <input type="number" id="inputVal" inputmode="decimal" step="any" placeholder="לדוגמה: 0.5">
           <span class="unit" id="unitLabel">מ״ג</span>
@@ -767,6 +770,7 @@ input[type=number]::placeholder { color: color-mix(in srgb, var(--pri) 40%, tran
 
       <button class="calc-btn" id="calcBtn" disabled>חשב</button>
 
+      <div class="sr-only" id="srResult" aria-live="polite"></div>
       <div class="result hidden" id="resultBox">
         <div class="result-headline">
           <div class="result-badge">✓</div>
@@ -978,6 +982,7 @@ input[type=number]::placeholder { color: color-mix(in srgb, var(--pri) 40%, tran
     // the dial/progress script below listens for this
     document.dispatchEvent(new CustomEvent('calc-result', { detail: { clicks: clicks, total: med.totalClicks, mode: state.mode, mg: state.mode === 'doseToClicks' ? v : v * mgPerClick } }));
     resultBox.classList.remove('hidden');
+    document.getElementById('srResult').textContent = 'התוצאה: ' + resultValue.textContent + '. ' + resultFrom.textContent;
     scrollToStep(resultBox);
   });
 
@@ -1010,7 +1015,7 @@ input[type=number]::placeholder { color: color-mix(in srgb, var(--pri) 40%, tran
 
 (function(){
   const box = document.getElementById('resultBox');
-  box.insertAdjacentHTML('afterbegin', '<div class="dial"><svg viewBox="-120 -120 240 240"><defs><radialGradient id="kg" cx="50%" cy="30%"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="var(--pri-light)"/></radialGradient></defs><circle class="knob" r="74"/><g id="tks"></g></svg><div class="dial-c"><div class="dial-n" id="dn">0</div><div class="dial-u" id="du"></div><div class="dial-p" id="dp"></div></div></div><div class="dial-sc"><span>0</span><span id="dmax"></span></div>');
+  box.insertAdjacentHTML('afterbegin', '<div class="dial" aria-hidden="true"><svg viewBox="-120 -120 240 240"><defs><radialGradient id="kg" cx="50%" cy="30%"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="var(--pri-light)"/></radialGradient></defs><circle class="knob" r="74"/><g id="tks"></g></svg><div class="dial-c"><div class="dial-n" id="dn">0</div><div class="dial-u" id="du"></div><div class="dial-p" id="dp"></div></div></div><div class="dial-sc" aria-hidden="true"><span>0</span><span id="dmax"></span></div>');
   const g = document.getElementById('tks'), dn = document.getElementById('dn'), du = document.getElementById('du'), dp = document.getElementById('dp');
   const TOTAL = { wegovy: 74, mounjaro: 60 };
   let timers = [];
@@ -1034,7 +1039,7 @@ input[type=number]::placeholder { color: color-mix(in srgb, var(--pri) 40%, tran
   new MutationObserver(() => { if (box.classList.contains('hidden') && !box.classList.contains('idle')) idle(); }).observe(box, { attributes: true, attributeFilter: ['class'] });
   document.getElementById('medGrid').addEventListener('click', () => setTimeout(idle));
   document.addEventListener('calc-result', e => {
-    const d = e.detail, dur = 1400;
+    const d = e.detail, dur = matchMedia('(prefers-reduced-motion: reduce)').matches ? 1 : 1400;
     box.classList.remove('idle');
     draw(d.total);
     const tks = g.children;
