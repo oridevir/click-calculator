@@ -701,6 +701,39 @@ input[type=number]::placeholder { color: #71609A; }
   .steps-col .card, .steps-col:has(#calcCard:not(.hidden)) #medCard, .steps-col:has(#calcCard:not(.hidden)) #penCard { padding: 9px 24px !important; }
   .steps-col #penCard, .steps-col:has(#calcCard:not(.hidden)) #penCard, .steps-col #calcCard { padding-bottom: 14px !important; }
 }
+/* ═══ About window (click on the app icon in the header) ═══ */
+.hdr-title-row { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.logo-info { position: relative; flex-shrink: 0; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 12px; background: none; cursor: pointer; line-height: 0;
+  box-shadow: 0 0 0 2px rgba(255,255,255,.85), 0 8px 18px -8px rgba(0,0,0,.6); }
+.logo-info img { width: 100%; height: 100%; border-radius: 12px; }
+.logo-info::after { content: "i"; position: absolute; bottom: -5px; left: -5px; width: 18px; height: 18px; border-radius: 50%;
+  background: #fff; color: var(--pri-dark); font: italic 700 12px/18px Georgia, serif; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,.4); transition: transform .15s; }
+.logo-info:hover::after, .logo-info:focus-visible::after { transform: scale(1.15); }
+.logo-info:focus-visible { outline: 3px solid var(--glow); outline-offset: 3px; }
+@media (min-width: 900px) { .logo-info { width: clamp(34px, 5vh, 44px); height: clamp(34px, 5vh, 44px); } }
+@media (max-width: 380px) { .hdr-title-row { gap: 9px; } .logo-info { width: 36px; height: 36px; } .hdr-text h1.page-title { font-size: 25px; } }
+.about-ov { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px;
+  background: rgba(20,10,35,.6); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.about-ov[hidden] { display: none; }
+.about-box { width: min(440px, 100%); max-height: calc(100vh - 32px); display: flex; flex-direction: column; background: var(--panel);
+  border-radius: 26px; overflow: hidden; box-shadow: 0 24px 60px -16px rgba(0,0,0,.7); }
+.about-head { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 16px 20px;
+  background: linear-gradient(100deg, var(--body), var(--pri-dark)); color: #fff; }
+.about-head img { width: 42px; height: 42px; border-radius: 11px; box-shadow: 0 0 0 2px #fff; }
+.about-head h2 { margin: 0; font-size: 22px; font-weight: 800; color: #fff; }
+.about-body { overflow: auto; padding: 18px 22px 22px; text-align: center; font-size: 16px; line-height: 1.6; color: #2A1747; }
+.about-body p { margin: 0 0 10px; text-wrap: pretty; }
+.about-body hr { border: 0; border-top: 1px solid rgba(60,30,110,.15); margin: 12px 0; }
+.about-body h3 { margin: 0 0 6px; font-size: 16.5px; color: var(--pri-dark); }
+.about-body a { color: var(--pri-dark); font-weight: 700; }
+.about-body ol { margin: 0 0 8px; padding: 0; list-style: none; counter-reset: s; }
+.about-body ol li { counter-increment: s; margin: 0 0 5px; text-wrap: pretty; }
+.about-body ol li::before { content: counter(s); display: inline-block; width: 22px; height: 22px; line-height: 22px; border-radius: 7px;
+  background: var(--lcd); color: var(--glow); font-family: 'Orbitron', 'Rubik', sans-serif; font-weight: 700; font-size: 12px; margin-inline-end: 6px; }
+.about-body .bless { font-weight: 800; color: var(--pri-dark); font-size: 17px; margin: 0; }
+.about-body .about-close { display: block; width: 100%; margin-top: 16px; padding: 12px 16px; font-size: 16px; font-weight: 700; font-family: inherit;
+  border: none; border-radius: 14px; color: #fff; cursor: pointer; background: var(--pri); box-shadow: 0 4px 0 var(--pri-dark); }
+.about-body .about-close:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--pri-dark); }
 </style>
 </head>
 <body>
@@ -709,7 +742,10 @@ input[type=number]::placeholder { color: #71609A; }
   <header class="app-header">
     <div class="hdr-text">
       <div class="hdr-eyebrow">זריקות הרזיה GLP1</div>
-      <h1 class="page-title">מחשבון מינון וקליקים</h1>
+      <div class="hdr-title-row">
+        <button type="button" class="logo-info" id="about-open" title="אודות האפליקציה" aria-label="אודות האפליקציה"><img src="icons/icon.svg" alt=""></button>
+        <h1 class="page-title">מחשבון מינון וקליקים</h1>
+      </div>
     </div>
   </header>
 
@@ -1069,6 +1105,45 @@ input[type=number]::placeholder { color: #71609A; }
 
 
   inp.parentNode.addEventListener('mousedown', e => { if (e.target !== inp) { e.preventDefault(); inp.focus(); } });
+})();
+</script>
+<!-- About window: opens from the app icon in the header -->
+<div class="about-ov" id="about-ov" hidden>
+  <div class="about-box" role="dialog" aria-modal="true" aria-labelledby="about-t">
+    <div class="about-head"><img src="icons/icon.svg" alt="" width="42" height="42"><h2 id="about-t">מחשבון מינון וקליקים</h2></div>
+    <div class="about-body">
+      <p><b>מחשבון מינון וקליקים</b> ממיר בין מינון התרופה (במ״ג) לבין מספר הקליקים בחוגת עט ההזרקה — בעטי וויגובי ומונג׳רו, בשני הכיוונים. הוא שימושי כשהרופא/ה הנחה/תה להזריק מינון שאינו המנה המלאה של העט.</p>
+      <p>המחשבון לא שומר שום מידע ולא שולח אותו לשום שרת.</p>
+      <hr>
+      <h3>איך משתמשים</h3>
+      <ol><li>בוחרים את התרופה</li><li>בוחרים את מינון העט שברשותך</li><li>מזינים את המינון הרצוי — או מספר קליקים — ולוחצים "חשב"</li></ol>
+      <p>(ספירת קליקים היא שיטה לא-רשמית. יש לפעול תמיד לפי הנחיית הרופא/ה המטפל/ת.)</p>
+      <hr>
+      <p>האפליקציה פותחה ע״י <b>ד״ר אורי דביר</b>.<br>כלים רפואיים דיגיטליים נוספים, למטופלים ולקהילה הרפואית, זמינים באתר <a href="https://drdevir.com" target="_blank" rel="noopener" dir="ltr">DrDevir.com</a><span class="sr-only"> (נפתח בחלון חדש)</span>.</p>
+      <p>לפניות, הצעות והערות: <a href="mailto:Clinic@DrDevir.com" dir="ltr">Clinic@DrDevir.com</a></p>
+      <hr>
+      <p class="bless">בריאות שלמה!</p>
+      <button type="button" class="about-close" id="about-close">סגירה</button>
+    </div>
+  </div>
+</div>
+<script>
+(function () {
+  var ov = document.getElementById('about-ov'), opener = null, downOnBackdrop = false;
+  function openAbout() {
+    opener = document.activeElement;
+    ov.hidden = false;
+    document.getElementById('about-close').focus({ preventScroll: true });
+    ov.querySelector('.about-body').scrollTop = 0;
+  }
+  function closeAbout() { ov.hidden = true; if (opener && opener.focus) opener.focus(); }
+  document.getElementById('about-open').addEventListener('click', openAbout);
+  document.getElementById('about-close').addEventListener('click', closeAbout);
+  // Close on the backdrop only when the click both started and ended there
+  // (selecting text and releasing outside must not close the window)
+  ov.addEventListener('mousedown', function (e) { downOnBackdrop = e.target === ov; });
+  ov.addEventListener('click', function (e) { if (e.target === ov && downOnBackdrop) closeAbout(); downOnBackdrop = false; });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !ov.hidden) closeAbout(); });
 })();
 </script>
 </body>
