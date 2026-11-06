@@ -61,3 +61,6 @@ MEDS.mounjaro = { totalClicks: 60, pens: [2.5, 5, 7.5, 10, 12.5, 15] }   // Kwik
 ## זרימת פיתוח
 
 עובדים בענף נפרד, בודקים בקישור זמני (`raw.githack.com/oridevir/click-calculator/<commit>/index.html`), ורק אחרי אישור ממזגים ל-`main` (מפעיל GitHub Pages).
+
+## קידום בגוגל (2026-11-06)
+בראש `index.html`: תיאור לעמוד, canonical ו-Open Graph (תמונה: `icons/icon-512.png`). בשורש: `robots.txt` ו-`sitemap.xml`.
