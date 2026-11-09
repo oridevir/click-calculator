@@ -63,4 +63,4 @@ MEDS.mounjaro = { totalClicks: 60, pens: [2.5, 5, 7.5, 10, 12.5, 15] }   // Kwik
 עובדים בענף נפרד, בודקים בקישור זמני (`raw.githack.com/oridevir/click-calculator/<commit>/index.html`), ורק אחרי אישור ממזגים ל-`main` (מפעיל GitHub Pages).
 
 ## קידום בגוגל (2026-11-06)
-בראש `index.html`: תיאור לעמוד, canonical ו-Open Graph (תמונה: `icons/icon-512.png`). בשורש: `robots.txt` ו-`sitemap.xml`.
+בראש `index.html`: תיאור לעמוד, canonical ו-Open Graph (תמונת שיתוף רחבה: `icons/og-image.png`, 1200×630 עם קרדיט — 2026-11-09; לפני כן האייקון הריבועי, שוואטסאפ מתח לכל הבועה). בשורש: `robots.txt` ו-`sitemap.xml`.
