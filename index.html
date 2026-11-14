@@ -423,6 +423,11 @@
         }
         .steps-col:has(#calcCard:not(.hidden)) .med-btn .tag{ display:none; }
     }
+
+/* קישור להצהרת הנגישות בפוטר + טקסט לקורא מסך בלבד (נובמבר 2026) */
+.a11y-statement { display:inline-block; margin-top:6px; padding:3px 10px; border-radius:999px; background:rgba(255,255,255,.85); font-size:12.5px; color:var(--text); text-decoration:underline; text-underline-offset:2px; } /* רקע בהיר משלו — במחשב חלק מהפוטרים יושבים על רקע כהה */
+.a11y-statement:hover, .a11y-statement:focus-visible { color:var(--ink); }
+.a11y-sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
 </style>
 <style id="device">
 /* ═══ עיצוב "מכשיר" — Clicks Calculator. Sister apps (BP-app, BMIapp) use the "Dawn" language; this one keeps its tokens
@@ -845,7 +850,10 @@ input[type=number]::placeholder { color: #71609A; }
             <span class="dev-credit-line2">על ידי ד״ר אורי דביר</span>
             <span class="dev-credit-line3">DrDevir.com <span class="dev-credit-arrow">↗</span></span>
         </span>
+        <span class="a11y-sr"> (נפתח בחלון חדש)</span>
     </a>
+    <!-- הצהרת הנגישות של drdevir.com חלה גם על האפליקציה (חובה בחוק: דרך להגיע להצהרה מכל אתר) -->
+    <div><a href="https://drdevir.com/accessibility-statement.html" target="_blank" rel="noopener" class="a11y-statement">הצהרת נגישות<span class="a11y-sr"> (נפתח בחלון חדש)</span></a></div>
 </footer>
 
 <script>
@@ -1131,8 +1139,9 @@ input[type=number]::placeholder { color: #71609A; }
       <ol><li>בוחרים את התרופה</li><li>בוחרים את מינון העט שברשותך</li><li>מזינים את המינון הרצוי — או מספר קליקים — ולוחצים "חשב"</li></ol>
       <p>(ספירת קליקים היא שיטה לא-רשמית. יש לפעול תמיד לפי הנחיית הרופא/ה המטפל/ת.)</p>
       <hr>
-      <p>האפליקציה פותחה ע״י <b>ד״ר אורי דביר</b>.<br>כלים רפואיים דיגיטליים נוספים, למטופלים ולקהילה הרפואית, זמינים באתר <a href="https://drdevir.com" target="_blank" rel="noopener" dir="ltr">DrDevir.com</a><span class="sr-only"> (נפתח בחלון חדש)</span>.</p>
+      <p>האפליקציה פותחה ע״י <b>ד״ר אורי דביר</b>.<br>כלים רפואיים דיגיטליים נוספים, למטופלים ולקהילה הרפואית, זמינים באתר <a href="https://drdevir.com" target="_blank" rel="noopener" dir="ltr">DrDevir.com<span class="sr-only"> (נפתח בחלון חדש)</span></a>.</p>
       <p>לפניות, הצעות והערות: <a href="mailto:Clinic@DrDevir.com" dir="ltr">Clinic@DrDevir.com</a></p>
+      <p><a href="https://drdevir.com/accessibility-statement.html" target="_blank" rel="noopener">הצהרת נגישות<span class="sr-only"> (נפתח בחלון חדש)</span></a></p>
       <hr>
       <p class="bless">בריאות שלמה!</p>
       <button type="button" class="about-close" id="about-close">סגירה</button>
